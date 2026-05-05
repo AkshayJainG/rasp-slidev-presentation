@@ -542,10 +542,25 @@ This is the turning point of the RASP B story: normal Frida hooks make the detec
 ```javascript
 Process.setExceptionHandler(function(details) {
   // Route known NX faults to filtered wrappers.
-  // Skip intentional SIGSEGV traps when safe.
   return handled;
 })
 ```
+
+<div class="callout">
+Why it works: the RASP scans the first bytes of libc functions for hook trampolines. We never write any — the redirect lives in the page-fault path, not in the prologue. The detector reads pristine libc and walks away.
+</div>
+
+<!--
+Why this trick beats the detector, in slow form:
+
+RASP B's anti-analysis loop reads function prologues — the first few instructions of libc functions like open, exit, kill — looking for the byte pattern Frida's Interceptor.attach writes when it patches a function. If those bytes look like a trampoline (e.g. an unconditional branch to Frida's code cage), the detector concludes the process is hooked and kills it.
+
+A "zero-libc-hook" bypass never writes those bytes. Instead it redirects at the call site: the GOT entry for the function is pointed at a non-executable page. When the RASP calls the function, the CPU raises an NX (no-execute) fault. Frida's exception handler catches that fault, runs a NativeCallback wrapper with the result we want the RASP to see, and returns control. From the kernel's point of view this is just a recoverable page fault. From the RASP's point of view the libc bytes are still pristine and the call returned a clean answer.
+
+So the bypass moves out of the prologue, into the page-fault path. The detector has nothing to scan.
+
+One sentence: we replaced "patch the function" with "fault on the call", and faults do not leave fingerprints in the bytes the detector reads.
+-->
 
 ---
 
