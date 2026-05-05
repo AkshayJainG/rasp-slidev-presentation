@@ -156,6 +156,46 @@ flowchart LR
 </div>
 
 ---
+layout: default
+class: collage-slide
+---
+
+# Step 2 — Hide The Tools
+
+<div class="caption collage-caption">
+Before any RASP-specific work, every fingerprint Frida ships with is rewritten in the server binary. Process names, thread names, file paths, env strings — replaced with random bytes. The protector now scans memory that no longer says what it expects. We use this for every RASP in this talk.
+</div>
+
+<div class="collage">
+  <span class="chip" style="--x: 8%;  --y: 38%;  --r: -7deg;  --s: 1.20;">re.frida.server</span>
+  <span class="chip" style="--x: 28%; --y: 32%;  --r: 4deg;   --s: 1.05;">frida-agent</span>
+  <span class="chip" style="--x: 50%; --y: 36%;  --r: -3deg;  --s: 1.15;">frida-agent-64.so</span>
+  <span class="chip" style="--x: 74%; --y: 32%;  --r: 8deg;   --s: 1.05;">frida-agent-32.so</span>
+  <span class="chip" style="--x: 14%; --y: 50%;  --r: 3deg;   --s: 1.10;">frida-helper</span>
+  <span class="chip" style="--x: 36%; --y: 47%;  --r: -10deg; --s: 1.30;">linjector</span>
+  <span class="chip" style="--x: 60%; --y: 46%;  --r: 6deg;   --s: 1.10;">gum-js-loop</span>
+  <span class="chip" style="--x: 84%; --y: 48%;  --r: -5deg;  --s: 1.05;">gum-exceptor-worker</span>
+  <span class="chip" style="--x: 10%; --y: 62%;  --r: 9deg;   --s: 1.05;">gmain</span>
+  <span class="chip" style="--x: 26%; --y: 65%;  --r: -4deg;  --s: 1.25;">"frida"</span>
+  <span class="chip" style="--x: 44%; --y: 62%;  --r: 5deg;   --s: 1.10;">frida-main-loop</span>
+  <span class="chip" style="--x: 64%; --y: 64%;  --r: -8deg;  --s: 1.05;">gdbus</span>
+  <span class="chip" style="--x: 84%; --y: 64%;  --r: 3deg;   --s: 1.10;">pool-spawner</span>
+  <span class="chip" style="--x: 12%; --y: 76%;  --r: -6deg;  --s: 1.15;">pipe-</span>
+  <span class="chip" style="--x: 32%; --y: 80%;  --r: 7deg;   --s: 1.05;">FRIDA</span>
+  <span class="chip" style="--x: 50%; --y: 76%;  --r: -3deg;  --s: 1.20;">GADGET</span>
+  <span class="chip" style="--x: 68%; --y: 80%;  --r: 5deg;   --s: 1.10;">AGENT</span>
+  <span class="chip" style="--x: 86%; --y: 78%;  --r: -7deg;  --s: 1.05;">gadget.so</span>
+  <span class="chip" style="--x: 18%; --y: 90%;  --r: 4deg;   --s: 1.05;">-32.so</span>
+  <span class="chip" style="--x: 38%; --y: 92%;  --r: -5deg;  --s: 1.10;">-64.so</span>
+  <span class="chip" style="--x: 58%; --y: 90%;  --r: 8deg;   --s: 1.05;">/data/local/tmp</span>
+  <span class="chip" style="--x: 80%; --y: 92%;  --r: -4deg;  --s: 1.10;">/Library/Caches</span>
+  <span class="chip" style="--x: 92%; --y: 38%;  --r: -6deg;  --s: 1.05;">pool-%s</span>
+  <span class="chip" style="--x: 4%;  --y: 24%;  --r: 6deg;   --s: 1.05;">-%u.so</span>
+</div>
+
+<div class="collage-stamp">PATCHED</div>
+
+---
 
 <div class="section-label">04 / Promon Shield</div>
 
@@ -315,46 +355,6 @@ JNI_OnLoad looked like data, not useful code.
 | **17** | SSL unpinning bundle → Burp captures traffic |
 
 </div>
-
----
-layout: default
-class: collage-slide
----
-
-# Every Frida Fingerprint, Patched
-
-<div class="caption collage-caption">
-A small Python patcher rewrites every recognisable Frida string in the server binary before it hits the device. The protector now scans bytes that no longer say what it expects.
-</div>
-
-<div class="collage">
-  <span class="chip" style="--x: 8%;  --y: 38%;  --r: -7deg;  --s: 1.20;">re.frida.server</span>
-  <span class="chip" style="--x: 28%; --y: 32%;  --r: 4deg;   --s: 1.05;">frida-agent</span>
-  <span class="chip" style="--x: 50%; --y: 36%;  --r: -3deg;  --s: 1.15;">frida-agent-64.so</span>
-  <span class="chip" style="--x: 74%; --y: 32%;  --r: 8deg;   --s: 1.05;">frida-agent-32.so</span>
-  <span class="chip" style="--x: 14%; --y: 50%;  --r: 3deg;   --s: 1.10;">frida-helper</span>
-  <span class="chip" style="--x: 36%; --y: 47%;  --r: -10deg; --s: 1.30;">linjector</span>
-  <span class="chip" style="--x: 60%; --y: 46%;  --r: 6deg;   --s: 1.10;">gum-js-loop</span>
-  <span class="chip" style="--x: 84%; --y: 48%;  --r: -5deg;  --s: 1.05;">gum-exceptor-worker</span>
-  <span class="chip" style="--x: 10%; --y: 62%;  --r: 9deg;   --s: 1.05;">gmain</span>
-  <span class="chip" style="--x: 26%; --y: 65%;  --r: -4deg;  --s: 1.25;">"frida"</span>
-  <span class="chip" style="--x: 44%; --y: 62%;  --r: 5deg;   --s: 1.10;">frida-main-loop</span>
-  <span class="chip" style="--x: 64%; --y: 64%;  --r: -8deg;  --s: 1.05;">gdbus</span>
-  <span class="chip" style="--x: 84%; --y: 64%;  --r: 3deg;   --s: 1.10;">pool-spawner</span>
-  <span class="chip" style="--x: 12%; --y: 76%;  --r: -6deg;  --s: 1.15;">pipe-</span>
-  <span class="chip" style="--x: 32%; --y: 80%;  --r: 7deg;   --s: 1.05;">FRIDA</span>
-  <span class="chip" style="--x: 50%; --y: 76%;  --r: -3deg;  --s: 1.20;">GADGET</span>
-  <span class="chip" style="--x: 68%; --y: 80%;  --r: 5deg;   --s: 1.10;">AGENT</span>
-  <span class="chip" style="--x: 86%; --y: 78%;  --r: -7deg;  --s: 1.05;">gadget.so</span>
-  <span class="chip" style="--x: 18%; --y: 90%;  --r: 4deg;   --s: 1.05;">-32.so</span>
-  <span class="chip" style="--x: 38%; --y: 92%;  --r: -5deg;  --s: 1.10;">-64.so</span>
-  <span class="chip" style="--x: 58%; --y: 90%;  --r: 8deg;   --s: 1.05;">/data/local/tmp</span>
-  <span class="chip" style="--x: 80%; --y: 92%;  --r: -4deg;  --s: 1.10;">/Library/Caches</span>
-  <span class="chip" style="--x: 92%; --y: 38%;  --r: -6deg;  --s: 1.05;">pool-%s</span>
-  <span class="chip" style="--x: 4%;  --y: 24%;  --r: 6deg;   --s: 1.05;">-%u.so</span>
-</div>
-
-<div class="collage-stamp">PATCHED</div>
 
 ---
 
