@@ -1,0 +1,9 @@
+node_modules
+.DS_Store
+dist
+slides-preview
+*.local
+.vscode
+.idea
+slides-export
+slides.pdf
