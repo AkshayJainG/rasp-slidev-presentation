@@ -289,6 +289,26 @@ JNI_OnLoad looked like data, not useful code.
 
 </div>
 
+<div class="quote">
+You don't need to deobfuscate Promon to understand it. You just need to be at the right hook when it talks to the kernel.
+</div>
+
+<!--
+Static analysis got us to the point of "we know there is a packed library and a string decryptor", but we did not know what Promon actually does at runtime. So we switched to dynamic instrumentation and asked four questions in order.
+
+First — what symbols is Promon resolving at runtime? We hooked dlsym, the libc function for looking up a symbol by name. Anything resolved through dlsym is a function the protector wants to call but does not want to advertise in its import table. The output is the top row: fork, prctl, dl_iterate_phdr, syscall, __system_property_get. That is already the shopping list of a RASP — fork a child, set process flags, walk loaded modules, make raw syscalls, read system properties.
+
+Second — prctl was interesting, so we hooked it specifically. The arguments told us Promon is calling PR_SET_PTRACER and toggling dumpability. Translation: it is setting up anti-debug. Specifically, it is making sure no one else can ptrace the process and turning off core dumps. So we now know there is an anti-debug layer.
+
+Third — and this is the important one — we scanned the unpacked memory for the byte pattern 01 00 00 d4. That is svc #0 in ARM64, the instruction that traps directly into the kernel. Every match is a place where Promon is making a syscall without going through libc, which means a normal libc-level Frida hook would never see it. We got hits on faccessat, openat, ptrace, kill, exit_group, mprotect — file checks, anti-debug, process termination, memory permission changes. That is the kill set.
+
+Fourth — the mprotect hits were the giveaway. Promon was flipping memory permissions to executable in regions inside its own library. That only happens when you are about to run code you just unpacked. So even after we already dumped the library once, there is a second unpacked region we have not seen yet.
+
+So in four hooks, with no offsets, no symbols, and no prior knowledge of the binary, we went from a packed black box to a clear picture: Promon resolves syscalls dynamically, blocks debuggers, talks to the kernel directly, and unpacks at least twice. That is the map we needed before patching anything.
+
+If short on time: "Four hooks. dlsym to see what it resolves. prctl to confirm anti-debug. svc #0 scan to catch every direct syscall. mprotect to find a second unpacked region. No offsets needed."
+-->
+
 ---
 
 # Promon Detection Surface
